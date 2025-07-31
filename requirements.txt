@@ -1,0 +1,8 @@
+streamlit
+biopython
+matplotlib
+stmol
+ipywidgets
+ipython_genutils
+requests
+py3Dmol
