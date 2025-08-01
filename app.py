@@ -120,6 +120,16 @@ if sequenza:
 else:
     st.info("Inserisci un nome proteina oppure carica un file FASTA per iniziare.")
 
+st.markdown(
+    """
+    <div style="text-align: center; margin-top: 50px;">
+        <a href="https://www.buymeacoffee.com/gjovannj" target="_blank">
+            <img src="https://img.buymeacoffee.com/button-api/?text=Offrimi un caffè&emoji=☕&slug=gjovannj&button_colour=FFDD00&font_colour=000000&font_family=Arial&outline_colour=000000&coffee_colour=ffffff" />
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 
