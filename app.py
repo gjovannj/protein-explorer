@@ -13,22 +13,22 @@ st.set_page_config(page_title="Protein Explorer", layout="wide")
 
 st.title("🧬 Protein Explorer")
 
-# Funzione per calcolare pI
+# Function to calculate pI
 def calcola_pI(seq):
     try:
         prot = ProteinAnalysis(seq)
         ip = IsoelectricPoint(seq)
         return round(ip.pi(), 2)
     except Exception:
-        return "Errore nel calcolo"
+        return "Error in calculation"
 
-# Funzione per contare aromatici
+# Function to count aromatics
 def conta_aromatici(seq):
     aromatici = ['F', 'W', 'Y']
     conteggio = Counter(seq)
     return {aa: conteggio.get(aa, 0) for aa in aromatici}
 
-# Evidenzia aromatici
+# Highlight aromatics
 def evidenzia_aromatici(seq):
     evidenziata = ""
     for aa in seq:
@@ -41,9 +41,9 @@ def evidenzia_aromatici(seq):
 # Download helper
 def download_link(text, filename):
     b64 = base64.b64encode(text.encode()).decode()
-    return f'<a href="data:file/txt;base64,{b64}" download="{filename}">📥 Scarica Sequenza</a>'
+    return f'<a href="data:file/txt;base64,{b64}" download="{filename}">📥 Download Sequence</a>'
 
-# Visualizzazione 3D
+# 3D Visualization
 def mostra_3D(pdb_id):
     xyzview = py3Dmol.view(query=f"pdb:{pdb_id}")
     xyzview.setStyle({'cartoon': {'color': 'spectrum'}})
@@ -55,8 +55,8 @@ def mostra_3D(pdb_id):
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.header("🔎 Cerca proteina")
-    nome_proteina = st.text_input("Nome proteina (es. P69905, HBB_HUMAN)", "")
+    st.header("🔎 Search Protein")
+    nome_proteina = st.text_input("Protein name (e.g. P69905, HBB_HUMAN)", "")
     sequenza = ""
     record_id = ""
 
@@ -68,68 +68,64 @@ with col1:
             record = SeqIO.read(StringIO(fasta_text), "fasta")
             sequenza = str(record.seq)
             record_id = record.id
-            st.success(f"✅ Proteina trovata: {record_id}")
+            st.success(f"✅ Protein found: {record_id}")
         else:
-            st.error("❌ Proteina non trovata. Controlla l'ID UniProt.")
+            st.error("❌ Protein not found. Check the UniProt ID.")
 
 with col2:
-    st.header("📁 Oppure carica un file FASTA")
-    file = st.file_uploader("Carica file FASTA", type=["fasta", "fa", "txt"])
+    st.header("📁 Or Upload FASTA File")
+    file = st.file_uploader("Upload FASTA file", type=["fasta", "fa", "txt"])
     if file:
         try:
             contenuto = file.getvalue().decode("utf-8")
             record = SeqIO.read(StringIO(contenuto), "fasta")
             sequenza = str(record.seq)
             record_id = record.id
-            st.success(f"✅ File caricato: {record_id}")
+            st.success(f"✅ File uploaded: {record_id}")
         except Exception:
-            st.error("❌ Errore nel caricamento del file")
+            st.error("❌ Error during file processing")
 
-# === Analisi ===
+# === Sequence Analysis ===
 if sequenza:
-    with st.expander("📊 Analisi della sequenza", expanded=True):
+    with st.expander("📊 Sequence Analysis", expanded=True):
         st.markdown(f"**ID:** `{record_id}`")
-        st.markdown(f"**Lunghezza:** {len(sequenza)} amminoacidi")
-        st.markdown("**Sequenza:**")
+        st.markdown(f"**Length:** {len(sequenza)} amino acids")
+        st.markdown("**Sequence:**")
         st.markdown(evidenzia_aromatici(sequenza), unsafe_allow_html=True)
 
-        st.markdown("**Aromatici (F, W, Y):**")
+        st.markdown("**Aromatics (F, W, Y):**")
         st.write(conta_aromatici(sequenza))
 
-        st.markdown(f"**Punto isoelettrico (pI):** {calcola_pI(sequenza)}")
+        st.markdown(f"**Isoelectric point (pI):** {calcola_pI(sequenza)}")
 
-        st.markdown(download_link(sequenza, "sequenza_proteica.txt"), unsafe_allow_html=True)
+        st.markdown(download_link(sequenza, "protein_sequence.txt"), unsafe_allow_html=True)
 
-        # Grafico
-        st.markdown("**🧪 Frequenza amminoacidi:**")
+        st.markdown("**🧪 Amino Acid Frequency:**")
         conta = Counter(sequenza)
         fig, ax = plt.subplots()
         ax.bar(conta.keys(), conta.values(), color="skyblue")
-        plt.xlabel("Amminoacidi")
-        plt.ylabel("Frequenza")
+        plt.xlabel("Amino Acids")
+        plt.ylabel("Frequency")
         st.pyplot(fig)
 
-    # === Visualizzazione 3D ===
-    with st.expander("🧬 Visualizzazione 3D (solo per proteine note con PDB)", expanded=False):
-        pdb_id = st.text_input("Inserisci PDB ID (es. 1A3N, 4HHB)")
+    with st.expander("🧬 3D Visualization (only for proteins with PDB ID)", expanded=False):
+        pdb_id = st.text_input("Enter PDB ID (e.g. 1A3N, 4HHB)")
         if pdb_id:
             try:
                 mostra_3D(pdb_id)
             except Exception as e:
-                st.error(f"❌ Errore visualizzazione: {e}")
+                st.error(f"❌ 3D rendering error: {e}")
 else:
-    st.info("Inserisci un nome proteina oppure carica un file FASTA per iniziare.")
+    st.info("Upload a FASTA file or enter a UniProt ID to begin")
 
+# Buy Me a Coffee button
 st.markdown(
     """
     <div style="text-align: center; margin-top: 50px;">
         <a href="https://www.buymeacoffee.com/gjovannj" target="_blank">
-            <img src="https://img.buymeacoffee.com/button-api/?text=Offrimi un caffè&emoji=☕&slug=gjovannj&button_colour=FFDD00&font_colour=000000&font_family=Arial&outline_colour=000000&coffee_colour=ffffff" />
+            <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=gjovannj&button_colour=FFDD00&font_colour=000000&font_family=Arial&outline_colour=000000&coffee_colour=ffffff" />
         </a>
     </div>
     """,
     unsafe_allow_html=True
 )
-
-
-
